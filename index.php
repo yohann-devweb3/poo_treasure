@@ -82,16 +82,20 @@
                     $isMonster = false;
 
                     foreach ($monsters as $monster) {
-                        if ($x == $monster->getmonsterX() && $y == $monster->getmonsterY()) {
-                            $isMonster = true;
-                            echo ( $monster->getmonsterX().':'. $monster->getmonsterY());
-                            if ($isMonster == $isPlayer) {
-                                echo "<script>";
-                                echo "  appendChildLiX('log-items', 'Vous rencontrez un monstre et lancer l'attaque !')";
-                                echo "</script>";
-                            }
-                            break;
+                        if ($playerX === $monster->getmonsterX() && $playerY === $monster->getmonsterY()) {
+                            // Le joueur a rencontré un monstre en position x et y
+                            // Vous pouvez effectuer des actions appropriées ici
+                            // Par exemple, déclencher une fonction de combat
+                            echo "Combat commencé avec le monstre en position {$monster->getmonsterX()}:{$monster->getmonsterY()}!";
+                            echo "<script>";
+                            echo "  appendChildLiX('log-items', 'Vous rencontrez un monstre et lancer l'attaque !')";
+                            echo "</script>";
+                            break; // Sortir de la boucle dès qu'un monstre est trouvé
+                     
+                            
+                      
                         }
+                    
                     }
 
                     echo '<div class="map-cell';
@@ -198,6 +202,7 @@
                                         break;
 
                                     default:
+                                    appendChildLiX('log-items', 'combat');
                                         break;
                                 }
                                 updatePlayerPosition();
@@ -231,7 +236,7 @@
                 }
 
                 // Déplace les monstres et le trésor en dehors de la boucle
-                updateOtherElements();
+              //  updateOtherElements();
 
                 function updateOtherElements() {
                     const treasureCell = document.querySelector('.treasure');
