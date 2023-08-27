@@ -24,8 +24,8 @@
         <li>
             Vous avez ci-dessous le journal de vos 4 derniers déplacements
         </li>
+        <h3>Journal de mouvements</h3>
         <div class="logCard">
-            <h3>Journal de mouvements</h3>
             <div class="log-items" id="log-items"></div>
         </div>
 
@@ -42,6 +42,30 @@
             include '../poo_treasure/treasure.php';
             include '../poo_treasure/player.php';
             include '../poo_treasure/map.php';
+            
+
+  /*-*-----------------*/
+
+  if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (isset($_POST["action"]) && isset($_POST["direction"])) {
+        $action = $_POST["action"];
+        $direction = $_POST["direction"];
+
+        // Traitez les données reçues comme vous le souhaitez
+        // Vous pouvez utiliser $action et $direction pour prendre des décisions ou effectuer des opérations
+
+        // renvoyer une réponse JSON
+        $response = array('status' => 'success', 'message' => 'Action reçue avec succès');
+        $player->setX($_POST["playerX"]);
+        $player->setY($_POST["playerY"]);
+    } else {
+        $response = array('status' => 'error', 'message' => 'Données manquantes');
+        echo json_encode($response);
+    }
+} else {
+    $response = array('status' => 'error', 'message' => 'Méthode non autorisée');
+    echo json_encode($response);
+}
 
             $gameMap = new GameMap(10, 10);
             $player = $gameMap->getPlayer();
@@ -49,6 +73,7 @@
             $playerY = $player->getY();
             $treasure = $gameMap->getTreasure();
             $monsters = $gameMap->getMonsters();
+
 
             for ($y = 1; $y <= 10; $y++) {
                 for ($x = 1; $x <= 10; $x++) {
@@ -59,7 +84,11 @@
                     foreach ($monsters as $monster) {
                         if ($x == $monster->getmonsterX() && $y == $monster->getmonsterY()) {
                             $isMonster = true;
+                            echo ( $monster->getmonsterX().':'. $monster->getmonsterY());
                             if ($isMonster == $isPlayer) {
+                                echo "<script>";
+                                echo "  appendChildLiX('log-items', 'Vous rencontrez un monstre et lancer l'attaque !')";
+                                echo "</script>";
                             }
                             break;
                         }
@@ -81,6 +110,10 @@
                     echo '"></div>';
                 }
             }
+
+          
+
+
             ?>
 
 
@@ -100,7 +133,7 @@
                         if (event.target.name === 'direction') {
                             const direction = event.target.value;
                             const action = (direction === 'reset') ? 'btn' : 'move';
-                            sendAction(action, direction);
+                            sendAction(action, direction,playerX,playerY);
                         }
                     });
                 });
@@ -131,7 +164,7 @@
                                     case 'up':
                                         if (playerY > 1) {
                                             playerY -= step;
-                                            appendChildLiX('log-items', 'le joueur se dirige vers le haut ['+playerX+':'+playerY+']');
+                                            appendChildLiX('log-items', 'le joueur se dirige vers le haut [' + playerX + ':' + playerY + ']');
                                         } else {
                                             appendChildLiX('log-items', 'le joueur rencontre un mur')
                                         };
@@ -139,7 +172,7 @@
                                     case 'down':
                                         if (playerY < 10) {
                                             playerY += step;
-                                            appendChildLiX('log-items', 'le joueur se dirige vers le bas ['+playerX+':'+playerY+']');
+                                            appendChildLiX('log-items', 'le joueur se dirige vers le bas [' + playerX + ':' + playerY + ']');
                                         } else {
                                             appendChildLiX('log-items', 'le joueur rencontre un mur')
                                         };
@@ -149,17 +182,17 @@
                                         console.log('le joueur se dirige vers la droite');
                                         if (playerX < 10) {
                                             playerX += step;
-                                            appendChildLiX('log-items', 'le joueur se dirige vers la droite ['+playerX+':'+playerY+']');
-                                        }else{
+                                            appendChildLiX('log-items', 'le joueur se dirige vers la droite [' + playerX + ':' + playerY + ']');
+                                        } else {
                                             appendChildLiX('log-items', 'le joueur rencontre un mur');
                                         };
                                         break;
                                     case 'left':
                                         console.log('le joueur se dirige vers la gauche');
-                                        if (playerX > 1){
+                                        if (playerX > 1) {
                                             playerX -= step;
                                             appendChildLiX('log-items', 'le joueur rencontre un mur');
-                                        }else{
+                                        } else {
                                             appendChildLiX('log-items', 'le joueur rencontre un mur');
                                         };
                                         break;
@@ -178,16 +211,6 @@
                     const params = "action=" + encodeURIComponent(action) + "&direction=" + encodeURIComponent(direction);
                     xhttp.send(params);
                 }
-
-
-                // AJAX call to update player position on server
-                $.post("index.php", {
-                    newPlayerX: playerX,
-                    newPlayerY: playerY
-                }, function(data) {
-
-                });
-
 
                 function updatePlayerPosition() {
                     const playerCell = document.querySelector('.player');
