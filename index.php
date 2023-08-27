@@ -26,7 +26,7 @@
         </li>
         <div class="logCard">
             <h3>Journal de mouvements</h3>
-            <div class="log-items"></div>
+            <div class="log-items" id="log-items"></div>
         </div>
 
         <div class="controls" id="buttons">
@@ -35,6 +35,7 @@
             <button type="button" name="direction" value="left">&#8592;</button>
             <button type="button" name="direction" value="right">&#8594;</button>
         </div>
+
         <div class="game-map">
             <?php
             include '../poo_treasure/monster.php';
@@ -88,7 +89,7 @@
                 let playerY = <?php echo $playerY; ?>;
 
                 const step = 1;
-                const movementLog = document.querySelector('.log-items');
+                const movementLog = document.querySelector('log-items');
                 const maxLogItems = 4; // Limite d'éléments dans le journal
 
                 document.addEventListener('DOMContentLoaded', function() {
@@ -102,48 +103,96 @@
                             sendAction(action, direction);
                         }
                     });
+                });
 
+                function appendChildLiX($elementTargetdiv, $elementWantTxt) {
+                    // Supposons que vous ayez une balise <div> avec une classe 'my-div' dans votre HTML
+                    const myDiv = document.getElementById($elementTargetdiv);
+
+                    // Création d'un élément <li>
+                    const newListItem = document.createElement('li');
+                    newListItem.textContent = $elementWantTxt;
+
+                    // Ajout de l'élément <li> à l'intérieur de la balise <div>
+                    myDiv.appendChild(newListItem);
+
+                }
+
+                function sendAction(action, direction) {
+                    const xhttp = new XMLHttpRequest();
+                    xhttp.onreadystatechange = function() {
+                        if (xhttp.readyState === 4 && xhttp.status === 200) {
+
+                            // console.log(xhttp.responseText);
+
+                            if (action === 'move') {
+                                switch (direction) {
+
+                                    case 'up':
+                                        if (playerY > 1) {
+                                            playerY -= step;
+                                            appendChildLiX('log-items', 'le joueur se dirige vers le haut ['+playerX+':'+playerY+']');
+                                        } else {
+                                            appendChildLiX('log-items', 'le joueur rencontre un mur')
+                                        };
+                                        break;
+                                    case 'down':
+                                        if (playerY < 10) {
+                                            playerY += step;
+                                            appendChildLiX('log-items', 'le joueur se dirige vers le bas ['+playerX+':'+playerY+']');
+                                        } else {
+                                            appendChildLiX('log-items', 'le joueur rencontre un mur')
+                                        };
+                                        console.log('le joueur se dirige vers le bas');
+                                        break;
+                                    case 'right':
+                                        console.log('le joueur se dirige vers la droite');
+                                        if (playerX < 10) {
+                                            playerX += step;
+                                            appendChildLiX('log-items', 'le joueur se dirige vers la droite ['+playerX+':'+playerY+']');
+                                        }else{
+                                            appendChildLiX('log-items', 'le joueur rencontre un mur');
+                                        };
+                                        break;
+                                    case 'left':
+                                        console.log('le joueur se dirige vers la gauche');
+                                        if (playerX > 1){
+                                            playerX -= step;
+                                            appendChildLiX('log-items', 'le joueur rencontre un mur');
+                                        }else{
+                                            appendChildLiX('log-items', 'le joueur rencontre un mur');
+                                        };
+                                        break;
+
+                                    default:
+                                        break;
+                                }
+                                updatePlayerPosition();
+                            }
+                        }
+                        console.log('joueur : ' + playerX + "-" + playerY);
+                    };
+
+                    xhttp.open("POST", "index.php", true);
+                    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                    const params = "action=" + encodeURIComponent(action) + "&direction=" + encodeURIComponent(direction);
+                    xhttp.send(params);
+                }
+
+
+                // AJAX call to update player position on server
+                $.post("index.php", {
+                    newPlayerX: playerX,
+                    newPlayerY: playerY
+                }, function(data) {
 
                 });
 
-
-                document.addEventListener('keydown', (event) => {
-                    switch (event.key) {
-                        case 'ArrowUp':
-                            if (playerY > 1) playerY -= step;
-                            logMovement('Le joueur se dirige vers le haut');
-                            break;
-                        case 'ArrowDown':
-                            if (playerY < 10) playerY += step;
-                            logMovement('Le joueur se dirige vers le bas');
-                            break;
-                        case 'ArrowLeft':
-                            if (playerX > 1) playerX -= step;
-                            logMovement('Le joueur se dirige vers la gauche');
-                            break;
-                        case 'ArrowRight':
-                            if (playerX < 10) playerX += step;
-                            logMovement('Le joueur se dirige vers la droite');
-                            break;
-
-
-                    }
-                    // AJAX call to update player position on server
-                    $.post("index.php", {
-                        newPlayerX: playerX,
-                        newPlayerY: playerY
-                    }, function(data) {
-
-                    });
-                    updatePlayerPosition();
-                    console.log('joueur : ' + playerX + "-" + playerY);
-
-                });
 
                 function updatePlayerPosition() {
                     const playerCell = document.querySelector('.player');
-                    playerCell.style.gridRow = playerY;
-                    playerCell.style.gridColumn = playerX;
+                    playerCell.style.gridRow = playerX;
+                    playerCell.style.gridColumn = playerY;
                 }
 
                 function logMovement(direction) {

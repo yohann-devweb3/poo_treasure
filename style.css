@@ -67,7 +67,9 @@ button{
 
 .logCard{
   margin-top: 18px;
-  width: auto;
   border: solid 2px chartreuse;
-  height: max-content;
+  height: 150px;
+  overflow: scroll!important;
+  position: sticky!important;
 }
+

@@ -13,17 +13,18 @@ class GameMap
         $this->height = $height;
         $this->player = new Player(1, 1);
         $this->treasure = new Treasure($width, $height);
-        $this->monsters = [
-            new Monster($width, $height),
-            new Monster($width, $height),
-            new Monster($width, $height),
-            new Monster($width, $height),
-            new Monster($width, $height),
-            new Monster($width, $height),
-            new Monster($width, $height),
-            new Monster($width, $height)
-        ];
+    
+        // Génère aléatoirement entre 10 et 50 monstres
+        $minMonsters = 10;
+        $maxMonsters = 50;
+        $numberOfMonsters = mt_rand($minMonsters, $maxMonsters);
+    
+        $this->monsters = [];
+        for ($i = 0; $i < $numberOfMonsters; $i++) {
+            $this->monsters[] = new Monster($width, $height);
+        }
     }
+    
 
     public function getPlayer()
     {
