@@ -1,0 +1,73 @@
+.game-map {
+display: none;
+  grid-template-columns: repeat(10, 50px);
+  grid-template-rows: repeat(10, 50px);
+
+  border: 2px solid black;
+  width: 520px;
+  height: 520px;
+}
+
+.map-cell {
+  width: 50px;
+  height: 50px;
+  border: 1px solid lightgray;
+}
+
+.player {
+  background-color: blue;
+}
+
+.treasure {
+  background-color: gold;
+}
+
+.monster {
+  background-color: red;
+}
+.image-container {
+  position: absolute;
+  margin-top: 525px;
+}
+.movement-log {
+  position: absolute;
+  margin-left: 300px;
+}
+
+h1{
+  position: relative;
+  vertical-align: middle;
+  text-align: center;
+}
+
+#buttons{
+  position :relative;
+  visibility: visible;
+  margin-top: 120px;
+}
+
+body{
+  background-image: url('./img/illustration.png');
+}
+
+h1,h2,h3,li{
+  color: white;
+}
+
+p{
+  color :rgb(237, 232, 228);
+}
+
+button{
+  width: 55px;
+  height: 55px;
+  border-radius: 9%;
+  border-color: aqua;
+}
+
+.logCard{
+  margin-top: 18px;
+  width: auto;
+  border: solid 2px chartreuse;
+  height: max-content;
+}
